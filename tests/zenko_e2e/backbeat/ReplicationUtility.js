@@ -79,7 +79,7 @@ class ReplicationUtility {
 
     putObject(bucketName, objectName, content, cb) {
         console.log('\nin putobject:')
-        console.log(byteLength(`${bucketNname}/${objectName}`));
+        console.log(byteLength(`${bucketName}/${objectName}`));
         this.s3.putObject({
             Bucket: bucketName,
             Key: objectName,

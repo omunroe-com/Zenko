@@ -69,10 +69,25 @@ describe('Replication with AWS backend', function() {
         console.log('\ninitial test:', byteLength(keyutf8));
         series([
             next => scalityUtils.putObject(srcBucket, keyutf8, Buffer.alloc(1),
-                next),
+                (err, res) => {
+                    if (err) {
+                        console.log('ERR putObject:', err);
+                    }
+                    next(err);
+                }),
             next => scalityUtils.compareObjectsAWS(srcBucket, destBucket, keyutf8,
-                undefined, next),
-        ], done);
+                undefined, err => {
+                    if (err) {
+                        console.log('ERR compare:', err);
+                    }
+                    next(err)
+                }),
+        ], err => {
+            if (err) {
+                console.log('An error occurred in the test.');
+            }
+            done(err);
+        });
     });
 //
 //     it('should replicate a copied object', done => series([
