@@ -3,19 +3,25 @@ const crypto = require('crypto');
 const { series } = require('async');
 
 const { scalityS3Client, awsS3Client } = require('../../s3SDK');
+const sharedBlobSvc = require('../../azureSDK');
+const gcpStorage = require('../../gcpStorage');
 const ReplicationUtility = require('../../ReplicationUtility');
 const { makeGETRequest, getResponseBody } = require('../../utils/request');
 
-const scalityUtils = new ReplicationUtility(scalityS3Client);
+const scalityUtils =
+    new ReplicationUtility(scalityS3Client, sharedBlobSvc);
 const awsUtils = new ReplicationUtility(awsS3Client);
 
 const srcBucket = `source-bucket-${Date.now()}`;
-const destBucket = process.env.AWS_S3_BACKBEAT_BUCKET_NAME;
-const destLocation = process.env.AWS_DESTINATION_LOCATION;
+const awsDestBucket = process.env.AWS_S3_BACKBEAT_BUCKET_NAME;
+const destContainer = process.env.AZURE_BACKBEAT_CONTAINER_NAME;
+const destAWSLocation = process.env.AWS_S3_BACKEND_DESTINATION_LOCATION;
+const destAzureLocation = process.env.AZURE_BACKEND_DESTINATION_LOCATION;
 const hex = crypto.createHash('md5')
     .update(Math.random().toString())
     .digest('hex');
 const keyPrefix = `${srcBucket}/${hex}`;
+const destKeyPrefix = `${srcBucket}/${keyPrefix}`;
 const key = `${keyPrefix}/object-to-replicate-${Date.now()}`;
 
 const REPLICATION_TIMEOUT = 300000;
@@ -27,23 +33,66 @@ function makeDelayedGETRequest(endpoint, cb) {
     }, 5000);
 }
 
-describe.skip('Backbeat replication metrics', function dF() {
+function getAndCheckResponse(path, expectedBody, cb) {
+    let shouldContinue = false;
+    return doWhilst(next =>
+        makeGETRequest(path, (err, res) => {
+            if (err) {
+                return next(err);
+            }
+            assert.strictEqual(res.statusCode, 200);
+            getResponseBody(res, (err, body) => {
+                if (err) {
+                    return next(err);
+                }
+                shouldContinue =
+                    JSON.stringify(body) !== JSON.stringify(expectedBody);
+                if (shouldContinue) {
+                    return setTimeout(next, 2000);
+                }
+                return next();
+            });
+        }),
+    () => shouldContinue, cb);
+}
+
+describe.only('Backbeat replication metrics', function dF() {
     this.timeout(REPLICATION_TIMEOUT);
     const roleArn = 'arn:aws:iam::root:role/s3-replication-role';
+    const storageClass =
+        `${destAWSLocation},${destAzureLocation},${destGCPLocation}`;
 
     beforeEach(done => series([
         next => scalityUtils.createVersionedBucket(srcBucket, next),
         next => scalityUtils.putBucketReplicationMultipleBackend(srcBucket,
-            destBucket, roleArn, destLocation, next),
+            'placeholder', roleArn, storageClass, next),
     ], done));
 
-    afterEach(done => series([
+    afterEach(done => parallel([
         next => scalityUtils.deleteVersionedBucket(srcBucket, next),
-        next => awsUtils.deleteAllVersions(destBucket,
-            `${srcBucket}/${keyPrefix}`, next),
+        next => awsUtils.deleteAllVersions(awsDestBucket, destKeyPrefix, next),
+        next => scalityUtils.deleteAllBlobs(destContainer, destKeyPrefix, next),
     ], done));
 
-    it('should return specific object properties', done => {
+    [
+        '/_/backbeat/api/metrics/crr/all',
+        `/_/backbeat/api/metrics/crr/${destAWSLocation}`,
+        `/_/backbeat/api/metrics/crr/${destAzureLocation}`,
+        '/_/backbeat/api/metrics/crr/all/backlog',
+        '/_/backbeat/api/metrics/crr/all/completions',
+        '/_/backbeat/api/metrics/crr/all/failures',
+        '/_/backbeat/api/metrics/crr/all/throughput',
+    ].forEach(endpoint => {
+        it(`should get a 200 response for endpoint: ${endpoint}`, done => {
+            makeGETRequest(endpoint, (err, res) => {
+                assert.ifError(err);
+                assert.equal(res.statusCode, 200);
+                done();
+            });
+        });
+    });
+
+    it.skip('should return specific object properties', done => {
         makeGETRequest('/_/backbeat/api/metrics/crr/all', (err, res) => {
             assert.ifError(err);
             assert.equal(res.statusCode, 200);
@@ -65,7 +114,7 @@ describe.skip('Backbeat replication metrics', function dF() {
         });
     });
 
-    it('should get metrics for all sites', done => {
+    it.skip('should get metrics for all sites', done => {
         let prevDataOps;
         let prevDataBytes;
         series([
@@ -130,7 +179,7 @@ describe.skip('Backbeat replication metrics', function dF() {
             }),
     ], done));
 
-    it('should get metrics when specifying valid site', done => series([
+    it.skip('should get metrics when specifying valid site', done => series([
         next => scalityUtils.putObject(srcBucket, key, Buffer.alloc(100), next),
         next => scalityUtils.compareObjectsAWS(srcBucket, destBucket, key,
             undefined, next),
@@ -158,7 +207,7 @@ describe.skip('Backbeat replication metrics', function dF() {
             }),
     ], done));
 
-    it('should get bucket-level throughput metrics', done => {
+    it.skip('should get bucket-level throughput metrics', done => {
         let versionId;
         const destinationKey = `${srcBucket}/${key}`;
 

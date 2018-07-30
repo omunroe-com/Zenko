@@ -90,6 +90,12 @@ export AWS_S3_BACKEND_ACCESS_KEY=<aws-access-key>
 export AWS_S3_BACKEND_SECRET_KEY=<aws-secret-key>
 export AWS_S3_BACKBEAT_BUCKET_NAME=<destination-aws-bucket-name>
 export AWS_S3_BACKEND_DESTINATION_LOCATION=<destination-aws-location-name>
+export AWS_S3_BACKEND_SOURCE_LOCATION=<source-aws-location-name>
+export AZURE_BACKEND_ACCOUNT_NAME=<azure-account-name>
+export AZURE_BACKEND_ACCESS_KEY=<azure-access-key>
+export AZURE_BACKEND_ENDPOINT=<azure-endpoint>
+export AZURE_BACKBEAT_CONTAINER_NAME=<destination-azure-container-name>
+export AZURE_BACKEND_DESTINATION_LOCATION=<destination-azure-location-name>
 ```
 
 4. If using `*.env` files, source the files:
