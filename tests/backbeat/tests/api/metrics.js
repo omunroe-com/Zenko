@@ -59,8 +59,7 @@ function getAndCheckResponse(path, expectedBody, cb) {
 describe.only('Backbeat replication metrics', function dF() {
     this.timeout(REPLICATION_TIMEOUT);
     const roleArn = 'arn:aws:iam::root:role/s3-replication-role';
-    const storageClass =
-        `${destAWSLocation},${destAzureLocation},${destGCPLocation}`;
+    const storageClass = `${destAWSLocation},${destAzureLocation}`;
 
     beforeEach(done => series([
         next => scalityUtils.createVersionedBucket(srcBucket, next),
