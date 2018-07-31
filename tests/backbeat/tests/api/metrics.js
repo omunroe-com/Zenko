@@ -4,7 +4,6 @@ const { parallel, series } = require('async');
 
 const { scalityS3Client, awsS3Client } = require('../../s3SDK');
 const sharedBlobSvc = require('../../azureSDK');
-const gcpStorage = require('../../gcpStorage');
 const ReplicationUtility = require('../../ReplicationUtility');
 const { makeGETRequest, getResponseBody } = require('../../utils/request');
 
@@ -112,7 +111,7 @@ describe.only('Backbeat replication metrics', function dF() {
         });
     });
 
-    it('should report metrics when replication occurs', done => {
+    it.skip('should report metrics when replication occurs', done => {
         let prevDataOps;
         let prevDataBytes;
         series([
@@ -171,7 +170,7 @@ describe.only('Backbeat replication metrics', function dF() {
             next => scalityUtils.compareObjectsAWS(srcBucket, awsDestBucket, key,
                 undefined, next),
             next => makeDelayedGETRequest('/_/backbeat/api/metrics/crr/' +
-                `${awsDestLocation}/throughput/${awsDestBucket}/` +
+                `${destAWSLocation}/throughput/${awsDestBucket}/` +
                 `${destinationKey}?versionId=${versionId}`,
                 (err, res) => {
                     assert.ifError(err);
