@@ -99,11 +99,11 @@ describe.only('Backbeat replication metrics', function dF() {
                 assert.ifError(err);
                 assert.equal(res.statusCode, 200);
                 getResponseBody(res, (err, body) => {
-                    const type = Object.keys(body);
-                    const data = res[type];
+                    const type = Object.keys(body)[0];
+                    const data = body[type];
                     assert(data.description);
-                    assert(data.result);
-                    const resultKeys = Object.keys(data.result);
+                    assert(data.results);
+                    const resultKeys = Object.keys(data.results);
                     assert(resultKeys.includes('count'));
                     assert(resultKeys.includes('size'));
                     return done()
@@ -171,8 +171,8 @@ describe.only('Backbeat replication metrics', function dF() {
             next => scalityUtils.compareObjectsAWS(srcBucket, awsDestBucket, key,
                 undefined, next),
             next => makeDelayedGETRequest('/_/backbeat/api/metrics/crr/' +
-                `${destLocation}/throughput/${awsDestBucket}/${destinationKey}` +
-                `?versionId=${versionId}`,
+                `${awsDestLocation}/throughput/${awsDestBucket}/` +
+                `${destinationKey}?versionId=${versionId}`,
                 (err, res) => {
                     assert.ifError(err);
                     assert.equal(res.statusCode, 200);
