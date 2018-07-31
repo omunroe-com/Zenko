@@ -33,33 +33,11 @@ function makeDelayedGETRequest(endpoint, cb) {
     }, 5000);
 }
 
-function getAndCheckResponse(path, expectedBody, cb) {
-    let shouldContinue = false;
-    return doWhilst(next =>
-        makeGETRequest(path, (err, res) => {
-            if (err) {
-                return next(err);
-            }
-            assert.strictEqual(res.statusCode, 200);
-            getResponseBody(res, (err, body) => {
-                if (err) {
-                    return next(err);
-                }
-                shouldContinue =
-                    JSON.stringify(body) !== JSON.stringify(expectedBody);
-                if (shouldContinue) {
-                    return setTimeout(next, 2000);
-                }
-                return next();
-            });
-        }),
-    () => shouldContinue, cb);
-}
-
 describe.only('Backbeat replication metrics', function dF() {
     this.timeout(REPLICATION_TIMEOUT);
     const roleArn = 'arn:aws:iam::root:role/s3-replication-role';
     const storageClass = `${destAWSLocation},${destAzureLocation}`;
+    const pathPrefix = '/_/backbeat/api/metrics/crr';
 
     beforeEach(done => series([
         next => scalityUtils.createVersionedBucket(srcBucket, next),
@@ -74,13 +52,12 @@ describe.only('Backbeat replication metrics', function dF() {
     ], done));
 
     [
-        '/_/backbeat/api/metrics/crr/all',
-        `/_/backbeat/api/metrics/crr/${destAWSLocation}`,
-        `/_/backbeat/api/metrics/crr/${destAzureLocation}`,
+        `${pathPrefix}/all`,
+        `${pathPrefix}/${destAWSLocation}`,
+        `${pathPrefix}/${destAzureLocation}`,
     ].forEach(path => {
         it(`should return all metrics for path ${path}`, done => {
-            makeGETRequest(`/_/backbeat/api/metrics/crr/${destLocation}`,
-            (err, res) => {
+            makeGETRequest(path, (err, res) => {
                 assert.ifError(err);
                 assert.equal(res.statusCode, 200);
                 getResponseBody(res, (err, body) => {
@@ -103,15 +80,22 @@ describe.only('Backbeat replication metrics', function dF() {
     });
 
     [
-        '/_/backbeat/api/metrics/crr/all/backlog',
-        `/_/backbeat/api/metrics/crr/${destAWSLocation}/backlog`,
-        '/_/backbeat/api/metrics/crr/all/completions',
-        '/_/backbeat/api/metrics/crr/all/failures',
-        '/_/backbeat/api/metrics/crr/all/throughput',
+        `${pathPrefix}/all/backlog`,
+        `${pathPrefix}/${destAWSLocation}/backlog`,
+        `${pathPrefix}/${destAzureLocation}/backlog`,
+        `${pathPrefix}/all/completions`,
+        `${pathPrefix}/${destAWSLocation}/completions`,
+        `${pathPrefix}/${destAzureLocation}/completions`,
+        `${pathPrefix}/all/failures`,
+        `${pathPrefix}/${destAWSLocation}/failures`,
+        `${pathPrefix}/${destAzureLocation}/failures`,
+        `${pathPrefix}/all/throughput`,
+        `${pathPrefix}/${destAWSLocation}/throughput`,
+        `${pathPrefix}/${destAzureLocation}/throughput`,
     ].forEach(path => {
         it(`should get correctly formatted response for metric path: ${path}`,
         done => {
-            makeGETRequest(entry.path, (err, res) => {
+            makeGETRequest(path, (err, res) => {
                 assert.ifError(err);
                 assert.equal(res.statusCode, 200);
                 getResponseBody(res, (err, body) => {
@@ -132,7 +116,7 @@ describe.only('Backbeat replication metrics', function dF() {
         let prevDataOps;
         let prevDataBytes;
         series([
-            next => makeGETRequest('/_/backbeat/api/metrics/crr/all',
+            next => makeGETRequest(`${pathPrefix}/all`,
                 (err, res) => {
                     assert.ifError(err);
                     getResponseBody(res, (err, body) => {
@@ -141,8 +125,8 @@ describe.only('Backbeat replication metrics', function dF() {
                             body.completions.results.count;
                         prevDataBytes = body.backlog.results.size +
                             body.completions.results.size;
-                        console.log('prevDataOps:', prevDataOps);
-                        console.log('prevDataBytes:', prevDataBytes);
+                        process.stdout.write('prevDataOps: ' + prevDataOps);
+                        process.stdout.write('prevDataBytes: ', prevDataBytes);
                         next();
                     });
                 }),
@@ -158,15 +142,15 @@ describe.only('Backbeat replication metrics', function dF() {
                         // Backlog + Completions = replicated object
                         const opResult = body.backlog.results.count +
                             body.completions.results.count;
-                        console.log('opResult:', opResult);
+                        process.stdout.write('opResult: ', opResult);
                         assert(opResult - prevDataOps === 1);
                         const byteResult = body.backlog.results.size +
                             body.completions.results.size;
-                        console.log('byteResult:', byteResult);
+                        process.stdout.write('byteResult: ', byteResult);
                         assert(byteResult - prevDataBytes === 100);
 
                         const throughputSize = body.throughput.results.size;
-                        assert(throughputSize > 0);
+                        assert(throughputSize >= 0);
                         next();
                     });
                 }),
