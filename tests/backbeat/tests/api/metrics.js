@@ -126,7 +126,7 @@ describe.only('Backbeat replication metrics', function dF() {
                         prevDataBytes = body.backlog.results.size +
                             body.completions.results.size;
                         process.stdout.write('prevDataOps: ' + prevDataOps);
-                        process.stdout.write('prevDataBytes: ', prevDataBytes);
+                        process.stdout.write('prevDataBytes: ' + prevDataBytes);
                         next();
                     });
                 }),
@@ -142,11 +142,11 @@ describe.only('Backbeat replication metrics', function dF() {
                         // Backlog + Completions = replicated object
                         const opResult = body.backlog.results.count +
                             body.completions.results.count;
-                        process.stdout.write('opResult: ', opResult);
+                        process.stdout.write('opResult: ' + opResult);
                         assert(opResult - prevDataOps === 1);
                         const byteResult = body.backlog.results.size +
                             body.completions.results.size;
-                        process.stdout.write('byteResult: ', byteResult);
+                        process.stdout.write('byteResult: ' + byteResult);
                         assert(byteResult - prevDataBytes === 100);
 
                         const throughputSize = body.throughput.results.size;

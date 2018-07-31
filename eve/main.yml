@@ -107,15 +107,15 @@ models:
       name: Lint charts
       command: helm lint charts/*
       haltOnFailure: true
-  - ShellCommand: &run_zenko_e2e
-      name: Test zenko
-      command: >-
-        make DOCKER_IMAGE_NAME=$E2E_DOCKER_IMAGE_NAME
-        DOCKER_IMAGE_TAG='%(prop:commit_short_revision)s' end2end
-        || (echo "Tests have failed" ; kubectl get pods -L redis-role ; exit 1) >&2
-      workdir: build/tests
-      env:
-        <<: *global_env
+  # - ShellCommand: &run_zenko_e2e
+  #     name: Test zenko
+  #     command: >-
+  #       make DOCKER_IMAGE_NAME=$E2E_DOCKER_IMAGE_NAME
+  #       DOCKER_IMAGE_TAG='%(prop:commit_short_revision)s' end2end
+  #       || (echo "Tests have failed" ; kubectl get pods -L redis-role ; exit 1) >&2
+  #     workdir: build/tests
+  #     env:
+  #       <<: *global_env
   - ShellCommand: &dump_logs
       name: Dump logs
       command: make dump-logs
@@ -220,7 +220,7 @@ stages:
         haltOnFailure: true
         env:
           <<: *k8s_env
-    - ShellCommand: *run_zenko_e2e
+    # - ShellCommand: *run_zenko_e2e
     - ShellCommand:
         name: Run backbeat crr tests
         command: >-
@@ -314,6 +314,6 @@ stages:
           haltOnFailure: true
           env:
             <<: *k8s_env
-      - ShellCommand: *run_zenko_e2e
+      # - ShellCommand: *run_zenko_e2e
       - ShellCommand: *dump_logs
       - Upload: *upload_artifacts
