@@ -77,78 +77,79 @@ describe.only('Backbeat replication metrics', function dF() {
         '/_/backbeat/api/metrics/crr/all',
         `/_/backbeat/api/metrics/crr/${destAWSLocation}`,
         `/_/backbeat/api/metrics/crr/${destAzureLocation}`,
+    ].forEach(path => {
+        it(`should return all metrics for path ${path}`, done => {
+            makeGETRequest(`/_/backbeat/api/metrics/crr/${destLocation}`,
+            (err, res) => {
+                assert.ifError(err);
+                assert.equal(res.statusCode, 200);
+                getResponseBody(res, (err, body) => {
+                    assert.ifError(err);
+                    const metricTypes = ['backlog', 'completions',
+                        'throughput', 'failures'];
+                    const keys = Object.keys(body);
+                    keys.forEach(key => {
+                        assert(metricTypes.includes(key));
+                        assert(body[key].description);
+                        assert(body[key].results);
+                        const resultKeys = Object.keys(body[key].results);
+                        assert(resultKeys.includes('count'));
+                        assert(resultKeys.includes('size'));
+                    });
+                    done();
+                });
+            });
+        });
+    });
+
+    [
         '/_/backbeat/api/metrics/crr/all/backlog',
+        `/_/backbeat/api/metrics/crr/${destAWSLocation}/backlog`,
         '/_/backbeat/api/metrics/crr/all/completions',
         '/_/backbeat/api/metrics/crr/all/failures',
         '/_/backbeat/api/metrics/crr/all/throughput',
-    ].forEach(endpoint => {
-        it(`should get a 200 response for endpoint: ${endpoint}`, done => {
-            makeGETRequest(endpoint, (err, res) => {
+    ].forEach(path => {
+        it(`should get correctly formatted response for metric path: ${path}`,
+        done => {
+            makeGETRequest(entry.path, (err, res) => {
                 assert.ifError(err);
                 assert.equal(res.statusCode, 200);
-                done();
-            });
-        });
-    });
-
-    it('should return specific object properties', done => {
-        makeGETRequest('/_/backbeat/api/metrics/crr/all', (err, res) => {
-            assert.ifError(err);
-            assert.equal(res.statusCode, 200);
-            getResponseBody(res, (err, body) => {
-                assert.ifError(err);
-                const metricTypes = ['backlog', 'completions',
-                    'throughput', 'failures'];
-                const keys = Object.keys(body);
-                keys.forEach(key => {
-                    assert(metricTypes.includes(key));
-                    assert(body[key].description);
-                    assert(body[key].results);
-                    const resultKeys = Object.keys(body[key].results);
+                getResponseBody(res, (err, body) => {
+                    const type = Object.keys(res);
+                    const data = res[type];
+                    assert(data.description);
+                    assert(data.result);
+                    const resultKeys = Object.keys(data.result);
                     assert(resultKeys.includes('count'));
                     assert(resultKeys.includes('size'));
+                    return done()
                 });
-                done();
             });
         });
     });
 
-    it.skip('should get metrics for all sites', done => {
+    it('should report metrics when replication occurs', done => {
         let prevDataOps;
         let prevDataBytes;
         series([
-            // next => makeGETRequest('/_/backbeat/api/metrics/crr/all',
-            //     (err, res) => {
-            //         assert.ifError(err);
-            //         getResponseBody(res, (err, body) => {
-            //             assert.ifError(err);
-            //             prevDataOps = body.backlog.results.count +
-            //                 body.completions.results.count;
-            //             prevDataBytes = body.backlog.results.size +
-            //                 body.completions.results.size;
-            //             next();
-            //         });
-            //     }),
+            next => makeGETRequest('/_/backbeat/api/metrics/crr/all',
+                (err, res) => {
+                    assert.ifError(err);
+                    getResponseBody(res, (err, body) => {
+                        assert.ifError(err);
+                        prevDataOps = body.backlog.results.count +
+                            body.completions.results.count;
+                        prevDataBytes = body.backlog.results.size +
+                            body.completions.results.size;
+                        console.log('prevDataOps:', prevDataOps);
+                        console.log('prevDataBytes:', prevDataBytes);
+                        next();
+                    });
+                }),
             next => scalityUtils.putObject(srcBucket, key, Buffer.alloc(100),
                 next),
-            next => scalityUtils.compareObjectsAWS(srcBucket, destBucket, key,
-                undefined, next),
-            next => {
-                // const expectedBody = {
-                //     description: 'Number of bytes to be replicated (pending), ' +
-                //         'number of bytes transferred to the destination ' +
-                //         '(completed), and percentage of the object that has ' +
-                //         'completed replication (progress)',
-                //     pending: 0,
-                //     completed: 1,
-                //     progress: '100%',
-                // };
-                // return getAndCheckResponse(path, expectedBody, next);
-                const expectedBody = {
-                    description: ''
-                }
-                getAndCheckResponse
-            },
+            next => scalityUtils.compareObjectsAWS(srcBucket, awsDestBucket,
+                key, undefined, next),
             next => makeDelayedGETRequest('/_/backbeat/api/metrics/crr/all',
                 (err, res) => {
                     assert.ifError(err);
@@ -157,9 +158,11 @@ describe.only('Backbeat replication metrics', function dF() {
                         // Backlog + Completions = replicated object
                         const opResult = body.backlog.results.count +
                             body.completions.results.count;
+                        console.log('opResult:', opResult);
                         assert(opResult - prevDataOps === 1);
                         const byteResult = body.backlog.results.size +
                             body.completions.results.size;
+                        console.log('byteResult:', byteResult);
                         assert(byteResult - prevDataBytes === 100);
 
                         const throughputSize = body.throughput.results.size;
@@ -170,59 +173,7 @@ describe.only('Backbeat replication metrics', function dF() {
         ], done);
     });
 
-    it('should get metrics when specifying metric type', done => series([
-        next => scalityUtils.putObject(srcBucket, key, Buffer.alloc(100), next),
-        next => scalityUtils.compareObjectsAWS(srcBucket, destBucket, key,
-            undefined, next),
-        next => makeGETRequest('/_/backbeat/api/metrics/crr/all/backlog',
-            (err, res) => {
-                assert.ifError(err);
-                assert.equal(res.statusCode, 200);
-                getResponseBody(res, (err, body) => {
-                    assert.ifError(err);
-                    const keys = Object.keys(body);
-                    assert.strictEqual(keys.length, 1);
-                    assert.strictEqual(keys[0], 'backlog');
-
-                    assert(body.backlog.description);
-                    assert(body.backlog.results);
-                    const resultKeys = Object.keys(body.backlog.results);
-                    assert(resultKeys.includes('count'));
-                    assert(resultKeys.includes('size'));
-                    next();
-                });
-            }),
-    ], done));
-
-    it.skip('should get metrics when specifying valid site', done => series([
-        next => scalityUtils.putObject(srcBucket, key, Buffer.alloc(100), next),
-        next => scalityUtils.compareObjectsAWS(srcBucket, destBucket, key,
-            undefined, next),
-        next => makeGETRequest(
-            `/_/backbeat/api/metrics/crr/${destLocation}`,
-            (err, res) => {
-                assert.ifError(err);
-                assert.equal(res.statusCode, 200);
-                getResponseBody(res, (err, body) => {
-                    assert.ifError(err);
-                    const metricTypes = ['backlog', 'completions', 'throughput',
-                        'failures'];
-                    const keys = Object.keys(body);
-                    keys.forEach(key => {
-                        assert(metricTypes.includes(key));
-                        assert(body[key].description);
-                        assert(body[key].results);
-                        const resultKeys = Object.keys(body[key].results);
-                        assert(resultKeys.includes('count'));
-                        assert(resultKeys.includes('size'));
-                    });
-
-                    next();
-                });
-            }),
-    ], done));
-
-    it.skip('should get bucket-level throughput metrics', done => {
+    it('should get bucket-level throughput metrics', done => {
         let versionId;
         const destinationKey = `${srcBucket}/${key}`;
 
@@ -233,10 +184,10 @@ describe.only('Backbeat replication metrics', function dF() {
                     versionId = res.VersionId;
                     next();
                 }),
-            next => scalityUtils.compareObjectsAWS(srcBucket, destBucket, key,
+            next => scalityUtils.compareObjectsAWS(srcBucket, awsDestBucket, key,
                 undefined, next),
             next => makeDelayedGETRequest('/_/backbeat/api/metrics/crr/' +
-                `${destLocation}/throughput/${destBucket}/${destinationKey}` +
+                `${destLocation}/throughput/${awsDestBucket}/${destinationKey}` +
                 `?versionId=${versionId}`,
                 (err, res) => {
                     assert.ifError(err);
