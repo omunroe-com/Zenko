@@ -1,6 +1,6 @@
 const assert = require('assert');
 const crypto = require('crypto');
-const { series } = require('async');
+const { parallel, series } = require('async');
 
 const { scalityS3Client, awsS3Client } = require('../../s3SDK');
 const sharedBlobSvc = require('../../azureSDK');
@@ -91,7 +91,7 @@ describe.only('Backbeat replication metrics', function dF() {
         });
     });
 
-    it.skip('should return specific object properties', done => {
+    it('should return specific object properties', done => {
         makeGETRequest('/_/backbeat/api/metrics/crr/all', (err, res) => {
             assert.ifError(err);
             assert.equal(res.statusCode, 200);
@@ -117,22 +117,38 @@ describe.only('Backbeat replication metrics', function dF() {
         let prevDataOps;
         let prevDataBytes;
         series([
-            next => makeGETRequest('/_/backbeat/api/metrics/crr/all',
-                (err, res) => {
-                    assert.ifError(err);
-                    getResponseBody(res, (err, body) => {
-                        assert.ifError(err);
-                        prevDataOps = body.backlog.results.count +
-                            body.completions.results.count;
-                        prevDataBytes = body.backlog.results.size +
-                            body.completions.results.size;
-                        next();
-                    });
-                }),
+            // next => makeGETRequest('/_/backbeat/api/metrics/crr/all',
+            //     (err, res) => {
+            //         assert.ifError(err);
+            //         getResponseBody(res, (err, body) => {
+            //             assert.ifError(err);
+            //             prevDataOps = body.backlog.results.count +
+            //                 body.completions.results.count;
+            //             prevDataBytes = body.backlog.results.size +
+            //                 body.completions.results.size;
+            //             next();
+            //         });
+            //     }),
             next => scalityUtils.putObject(srcBucket, key, Buffer.alloc(100),
                 next),
             next => scalityUtils.compareObjectsAWS(srcBucket, destBucket, key,
                 undefined, next),
+            next => {
+                // const expectedBody = {
+                //     description: 'Number of bytes to be replicated (pending), ' +
+                //         'number of bytes transferred to the destination ' +
+                //         '(completed), and percentage of the object that has ' +
+                //         'completed replication (progress)',
+                //     pending: 0,
+                //     completed: 1,
+                //     progress: '100%',
+                // };
+                // return getAndCheckResponse(path, expectedBody, next);
+                const expectedBody = {
+                    description: ''
+                }
+                getAndCheckResponse
+            },
             next => makeDelayedGETRequest('/_/backbeat/api/metrics/crr/all',
                 (err, res) => {
                     assert.ifError(err);
