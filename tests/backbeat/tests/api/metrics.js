@@ -99,7 +99,7 @@ describe.only('Backbeat replication metrics', function dF() {
                 assert.ifError(err);
                 assert.equal(res.statusCode, 200);
                 getResponseBody(res, (err, body) => {
-                    const type = Object.keys(res);
+                    const type = Object.keys(body);
                     const data = res[type];
                     assert(data.description);
                     assert(data.result);
