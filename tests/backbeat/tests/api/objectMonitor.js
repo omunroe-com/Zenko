@@ -132,6 +132,9 @@ describe('Backbeat object monitor CRR metrics', function() {
                 assert.strictEqual(finalResponse.progress, '100%');
                 return next();
             });
+            // wait for metadata to update
+            next => scalityUtils.waitUntilReplicated(srcBucket, key, undefined,
+                next),
         },
     ], done));
 

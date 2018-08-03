@@ -130,7 +130,7 @@ describe('Backbeat replication metrics data', function dF() {
         next => scalityUtils.deleteVersionedBucket(srcBucket, next),
     ], done));
 
-    it.skip('should report metrics when replication occurs', done => {
+    it('should report metrics when replication occurs', done => {
         let prevCompletions;
         let prevThroughput;
         series([
