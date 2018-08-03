@@ -38,6 +38,7 @@ function getAndCheckResponse(path, expectedBody, cb) {
                 }
                 shouldContinue =
                     JSON.stringify(body) !== JSON.stringify(expectedBody);
+                process.stdout.write(JSON.stringify(body))
                 if (shouldContinue) {
                     return setTimeout(next, 2000);
                 }
