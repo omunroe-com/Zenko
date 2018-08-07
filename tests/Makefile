@@ -13,7 +13,6 @@ DOCKER_ARGS :=
 PYTEST_ARGS :=
 DOTENV := $(PWD)/.env
 
-
 BUILDDIR := build
 # These are for dumping logs, but they're really long so store them as variables
 E2E_LOG_PODS := {range .items[?(@.metadata.annotations.helm\.sh\/hook)]}{@.metadata.name}{"\n"}{end}
@@ -172,11 +171,11 @@ ifndef NO_INSTALL
 		--namespace $(HELM_NAMESPACE) \
 		--install ../kubernetes/zenko \
 		-f ../eve/ci-values.yml \
-        --set cloudserver.image.repository=$(IMAGE_REGISTRY)/zenko/cloudserver \
-        --set-string cloudserver.image.tag='$(CLOUDSERVER_TAG)' \
-        --set backbeat.image.repository=$(IMAGE_REGISTRY)/zenko/backbeat \
+        --set backbeat.image.repository=$(BACKBEAT_IMAGE) \
         --set-string backbeat.image.tag='$(BACKBEAT_TAG)' \
-        --set s3-data.image.repository=$(IMAGE_REGISTRY)/zenko/cloudserver \
+        --set cloudserver.image.repository=$(CLOUDSERVER_IMAGE) \
+        --set-string cloudserver.image.tag='$(CLOUDSERVER_TAG)' \
+        --set s3-data.image.repository=$(CLOUDSERVER_IMAGE) \
         --set-string s3-data.image.tag='$(CLOUDSERVER_TAG)'
 endif
 .PHONY: install-latest-zenko
@@ -260,6 +259,8 @@ upload-cosbench-results: | get-cosbench-results
 		--attach=True \
 		--restart=Never \
 		--namespace=$(HELM_NAMESPACE) \
+		--env COSBENCH_NIGHTLY_SERVICE_ACCOUNT='$(shell echo '$(COSBENCH_NIGHLTY_SERVICE_ACCOUNT)' | tr -d '\n')' \
+		--env COSBENCH_SPREADSHEET_ID='$(shell echo '$(COSBENCH_SPREADSHEET_ID)' | tr -d '\n')' \
 		-- python insert_data.py
 
 test-cosbench: | install-common get-latest-commit install-latest-zenko install-cosbench build-cosbench-runner wait-for-zenko trigger-cosbench upload-cosbench-results
