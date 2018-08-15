@@ -654,11 +654,23 @@ class ReplicationUtility {
         gcpDestBucket, key, cb) {
         return async.parallel([
             next => this.compareObjectsAWS(srcBucket, awsDestBucket, key,
-                undefined, next),
+                undefined, (err, data) => {
+                    console.log('Comparing Objects 1-M, AWS destBucket', awsDestBucket);
+                    console.log('Comparing Objects 1-M, AWS Err', err);
+                    return next(err, data);
+                }),
             next => this.compareObjectsAzure(srcBucket, destContainer, key,
-                next),
+                (err, data) => {
+                    console.log('Comparing Objects 1-M, Azure destContainer', destContainer);
+                    console.log('Comparing Objects 1-M, Azure Err', err);
+                    return next(err, data);
+                }),
             next => this.compareObjectsGCP(srcBucket, gcpDestBucket, key,
-                next),
+                (err, data) => {
+                    console.log('Comparing Objects 1-M, GCP destBucket', gcpDestBucket);
+                    console.log('Comparing Objects 1-M, GCP Err', err);
+                    return next(err, data);
+                }),
         ], cb);
     };
 

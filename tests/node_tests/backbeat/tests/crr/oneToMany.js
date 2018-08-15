@@ -42,10 +42,26 @@ function() {
     ], done));
 
     afterEach(done => series([
-        next => awsUtils.deleteAllVersions(awsDestBucket, destKeyPrefix, next),
-        next => utils.deleteAllBlobs(destContainer, destKeyPrefix, next),
-        next => utils.deleteAllFiles(gcpDestBucket, destKeyPrefix, next),
-        next => utils.deleteVersionedBucket(srcBucket, next),
+        next => awsUtils.deleteAllVersions(awsDestBucket, destKeyPrefix, (err, data) => {
+            console.log('Cleanup 1-M, AWS destBucket', awsDestBucket);
+            console.log('Cleanup 1-M, AWS Err', err);
+            return next(err, data);
+        }),
+        next => utils.deleteAllBlobs(destContainer, destKeyPrefix, (err, data) => {
+            console.log('Cleanup 1-M, Azure destContainer', destContainer);
+            console.log('Cleanup 1-M, Azure Err', err);
+            return next(err, data);
+        }),
+        next => utils.deleteAllFiles(gcpDestBucket, destKeyPrefix, (err, data) => {
+            console.log('Cleanup 1-M, GCP destBucket', gcpDestBucket);
+            console.log('Cleanup 1-M, GCP Err', err);
+            return next(err, data);
+        }),
+        next => utils.deleteVersionedBucket(srcBucket, (err, data) => {
+            console.log('Cleanup 1-M, versioned srcBucket', srcBucket);
+            console.log('Cleanup 1-M, versioned srcBucket Err', err);
+            return next(err, data);
+        }),
     ], done));
 
     it('should replicate an object', done => series([
