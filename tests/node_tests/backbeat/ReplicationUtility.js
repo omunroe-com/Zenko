@@ -683,6 +683,7 @@ class ReplicationUtility {
             next => this.getBlob(containerName,
                 `${srcBucket}/${key}`, next),
         ], (err, data) => {
+            console.log('ERR in compare obj azure, where azure container is', containerName, err);
             if (err) {
                 return cb(err);
             }
@@ -722,6 +723,7 @@ class ReplicationUtility {
             destData: next => this.download(destBucket,
                 `${srcBucket}/${key}`, next),
         }, (err, data) => {
+            console.log('ERR in compare obj gcp, where gcp bucket is', destBucket, err);
             if (err) {
                 return cb(err);
             }
