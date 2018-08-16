@@ -676,14 +676,25 @@ class ReplicationUtility {
 
     compareObjectsAzure(srcBucket, containerName, key, cb) {
         return async.series([
-            next => this.waitUntilReplicated(srcBucket, key, undefined, next),
-            next => this.getObject(srcBucket, key, next),
+            next => this.waitUntilReplicated(srcBucket, key, undefined, (err, data) => {
+                console.log('wait until replicated azure, srcBucket', srcBucket, err, data);
+                return next(err, data);
+            }),
+            next => this.getObject(srcBucket, key, (err, data) => {
+                console.log('get object azure, srcBucket', srcBucket, err, data);
+                return next(err, data);
+            }),
             next => this.azure.getBlobProperties(containerName,
-                `${srcBucket}/${key}`, next),
+                `${srcBucket}/${key}`, (err, data) => {
+                    console.log('get blob props azure, containerName', containerName, err, data);
+                    return next(err, data);
+                }),
             next => this.getBlob(containerName,
-                `${srcBucket}/${key}`, next),
+                `${srcBucket}/${key}`, (err, data) => {
+                    console.log('wait until replicated azure, srcBucket', containerName, err, data);
+                    return next(err, data);
+                }),
         ], (err, data) => {
-            console.log('ERR in compare obj azure, where azure container is', containerName, err);
             if (err) {
                 return cb(err);
             }
@@ -716,14 +727,25 @@ class ReplicationUtility {
     compareObjectsGCP(srcBucket, destBucket, key, cb) {
         return async.series({
             wait: next =>
-                this.waitUntilReplicated(srcBucket, key, undefined, next),
-            srcData: next => this.getObject(srcBucket, key, next),
+                this.waitUntilReplicated(srcBucket, key, undefined, (err, data) => {
+                    console.log('wait until replicated gcp, srcBucket', srcBucket, err, data);
+                    return next(err, data);
+                }),
+            srcData: next => this.getObject(srcBucket, key, (err, data) => {
+                console.log('get object gcp, srcBucket', srcBucket, err, data);
+                return next(err, data);
+            }),
             destMetadata: next => this.getMetadata(destBucket,
-                `${srcBucket}/${key}`, next),
+                `${srcBucket}/${key}`, (err, data) => {
+                    console.log('get metadata gcp, destBucket', destBucket, err, data);
+                    return next(err, data);
+                }),
             destData: next => this.download(destBucket,
-                `${srcBucket}/${key}`, next),
+                `${srcBucket}/${key}`, (err, data) => {
+                    console.log('download gcp, destBucket', destBucket, err, data);
+                    return next(err, data);
+                }),
         }, (err, data) => {
-            console.log('ERR in compare obj gcp, where gcp bucket is', destBucket, err);
             if (err) {
                 return cb(err);
             }
