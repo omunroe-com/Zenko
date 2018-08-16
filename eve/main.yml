@@ -2,7 +2,7 @@ version: "0.2"
 
 branches:
   default:
-    stage: "pre-merge"
+    stage: "test"
 
 models:
   - Git: &git_pull
@@ -144,3 +144,13 @@ stages:
           env:
             <<: *global_env
       - Upload: *upload_artifacts
+
+  test:
+    worker: &openstack
+      type: openstack
+      image: CentOS 7 (PVHVM)
+      flavor: general1-4
+    steps:
+      - ShellCommand:
+        name: test connectivity
+        command: curl http://sc.tmacs.space:8000
