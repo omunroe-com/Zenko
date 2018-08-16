@@ -153,7 +153,7 @@ stages:
     steps:
       - ShellCommand:
           name: Write out ssh key
-          command: echo '%(eve_scality_cloud_key)s' > ~/.ssh/id_ed25519 && chmod 400 ~/.ssh/id_ed25519
+          command: mkdir -p ~/.ssh && echo '%(eve_scality_cloud_key)s' > ~/.ssh/id_ed25519 && chmod 400 ~/.ssh/id_ed25519
       - ShellCommand:
           name: test connectivity
           command: ssh -o StrictHostKeyChecking=no eve@sc.tmacs.space
