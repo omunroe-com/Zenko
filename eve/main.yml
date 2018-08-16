@@ -152,5 +152,5 @@ stages:
       flavor: general1-4
     steps:
       - ShellCommand:
-        name: test connectivity
-        command: curl http://sc.tmacs.space:8000
+          name: test connectivity
+          command: curl http://sc.tmacs.space:8000
