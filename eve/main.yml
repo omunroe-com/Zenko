@@ -153,4 +153,4 @@ stages:
     steps:
       - ShellCommand:
           name: test connectivity
-          command: curl http://sc.tmacs.space:8000
+          command: ip a && curl http://sc.tmacs.space:8000
