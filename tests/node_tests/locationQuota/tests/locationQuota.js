@@ -10,7 +10,7 @@ const bucket = `quota-bucket-${Date.now()}`;
 
 const scalityS3 = new QuotaUtility(scalityS3Client);
 
-describe('Location storage quota', () => {
+describe.only('Location storage quota', () => {
     beforeEach(function beFn(done) {
         this.timeout(50000);
         async.series([
@@ -56,5 +56,3 @@ describe('Location storage quota', () => {
         });
     });
 });
-
-
