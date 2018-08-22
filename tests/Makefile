@@ -248,6 +248,7 @@ trigger-cosbench:
 		-- trigger_run.sh
 
 get-cosbench-results: | artifacts
+	$(V)$(KUBECTL) cp $(HELM_NAMESPACE)/$(COSBENCH_POD):archive/w1-workload1/ ./artifacts/workload/
 	$(V)$(KUBECTL) cp $(HELM_NAMESPACE)/$(COSBENCH_POD):archive/w1-workload1/w1-workload1.csv ./artifacts/workload.csv && \
 	ls -R ./artifacts && \
 	cp ./artifacts/workload.csv ../eve/workers/cosbench/workload.csv && \
