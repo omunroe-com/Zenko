@@ -9,12 +9,13 @@ RUN apk add -U python3 \
     python3-dev \
     musl-dev \
     openssl-dev && \
-    mkdir -p /usr/local/bin/tests
+    mkdir -p /usr/local/bin/tests/node_tests
 
-COPY ./node_tests/package.json ./node_tests/package-lock.json ./python_tests/requirements.txt /usr/local/bin/tests/
+COPY ./node_tests/package.json ./node_tests/package-lock.json /usr/local/bin/tests/node_tests/
+COPY ./python_tests/requirements.txt /tmp
 
-RUN cd /usr/local/bin/tests/ && \
-    python3 -m pip install -r requirements.txt tox kubernetes && \
+RUN python3 -m pip install -r /tmp/requirements.txt tox kubernetes && \
+    cd /usr/local/bin/tests/node_tests && \
     npm install && \
     rm -rf /var/cache/apk/* && \
     npm cache clear && \
