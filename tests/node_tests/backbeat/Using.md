@@ -5,23 +5,36 @@
 1. In the hosts file `/etc/hosts` map the ip of the kube node you are testing
    with to `zenko.local`. For example, by adding the line:
 
-    ```
-    <kube-node-ip> zenko.local
-    ```
+   ```
+   <kube-node-ip> zenko.local
+   ```
+
    If you are ssh-ed into one of the kube servers or doing a port-forward to a
    remote kube instance, the `kube-node-ip` value will be `127.0.0.1`
 
 2. Find the Zenko service endpoint for S3 calls to Cloudserver by running:
 
-    ```
-    kubectl get services
-    ```
-   Look for the service named `zenko-cloudserver`, the value under `NAME`
-   should be set as the Zenko endpoint for testing:
+   ```
+   kubectl get services
+   ```
 
-    ```
-    export CLOUDSERVER_ENDPOINT=<zenko-cloudserver-name>
-    ```
+   Example response:
+
+   ```
+   NAME                          TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+   kubernetes                    ClusterIP   10.233.0.1      <none>        443/TCP                      19h
+   zenko-backbeat-api            ClusterIP   10.233.8.158    <none>        8900/TCP                     19h
+   zenko-cloudserver             ClusterIP   10.233.17.120   <none>        80/TCP                       19h
+   ```
+
+   Look for the service named `zenko-cloudserver`. The value under `CLUSTER-IP`
+   for `zenko-cloudserver` should be set as the Zenko endpoint for testing.
+   For example, using the above response:
+
+   ```
+   export CLOUDSERVER_ENDPOINT=http://10.233.17.120
+   export CLOUDSERVER_HOST=<zenko-cloudserver-name>
+   ```
 
 3. Create an account using Orbit.
 4. Export the access key and secret key of that account (for example, in
@@ -104,7 +117,6 @@
    and `.secrets.env`):
 
     ```
-    export CLOUDSERVER_HOST=<zenko-cloudserver-name>
     export AWS_S3_BACKEND_ACCESS_KEY=<aws-access-key>
     export AWS_S3_BACKEND_SECRET_KEY=<aws-secret-key>
     export AWS_S3_BACKBEAT_BUCKET_NAME=<destination-aws-bucket-name>
@@ -138,7 +150,8 @@
 export AWS_S3_BACKEND_ACCESS_KEY=<aws-access-key>
 export AWS_S3_BACKEND_SECRET_KEY=<aws-secret-key>
 export AWS_S3_FAIL_BACKBEAT_BUCKET_NAME=<destination-fail-aws-bucket-name>
-export AWS_S3_FAIL_BACKEND_DESTINATION_LOCATION=<destination-fail-aws-bucket-name>
+export AWS_S3_FAIL_BACKEND_DESTINATION_LOCATION=<destination-fail-aws-location-name>
+export AWS_S3_BACKEND_DESTINATION_LOCATION=<destination-fail-aws-location-name>
 ```
 
 4. If using `*.env` files, source the files:
