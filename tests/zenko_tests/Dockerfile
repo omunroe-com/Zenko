@@ -3,7 +3,12 @@ FROM node:6-alpine
 ENV MOCHA_TAGS not:flaky
 
 # Install dependencies
-RUN apk add -U python3 && \
+RUN apk add -U python3 \
+    gcc \
+    libffi-dev \
+    python3-dev \
+    musl-dev \
+    openssl-dev && \
     mkdir -p /usr/local/bin/tests
 
 COPY ./node_tests/package.json ./node_tests/package-lock.json ./python_tests/requirements.txt /tmp/
@@ -18,7 +23,7 @@ RUN cd /tmp && \
     rm -rf /tmp/npm-* && \
     rm -rf /var/cache/apk/*
 
-COPY ./nodes_tests/npm_chain.sh ./docker-entrypoint.sh /usr/local/bin/
+COPY ./node_tests/npm_chain.sh ./docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/npm_chain.sh /usr/local/bin/docker-entrypoint.sh
 
 # Copy Tests
