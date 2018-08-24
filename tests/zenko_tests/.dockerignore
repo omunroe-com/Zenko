@@ -10,3 +10,4 @@
 **/__pycache__/
 **/orbit-simulator/
 **/.tox
+**/node_modules
