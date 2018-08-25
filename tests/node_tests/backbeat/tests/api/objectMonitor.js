@@ -31,6 +31,7 @@ function getAndCheckResponse(path, expectedBody, cb) {
                 if (err) {
                     return next(err);
                 }
+                process.stdout.write(`\n${JSON.stringify(body)}\n`)
                 shouldContinue =
                     JSON.stringify(body) !== JSON.stringify(expectedBody);
                 if (shouldContinue) {
@@ -147,7 +148,7 @@ describe('Backbeat object monitor CRR metrics', function() {
                     Buffer.alloc(10), next),
             (data, next) =>
                 scalityUtils.waitUntilReplicated(srcBucket, throughputKey,
-                    undefined, err => next(err, data)),
+                    undefined, next),
             (data, next) => {
                 const path = `/_/backbeat/api/metrics/crr/${destLocation}` +
                     `/throughput/${srcBucket}/${throughputKey}` +
