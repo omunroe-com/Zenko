@@ -2,6 +2,7 @@ const assert = require('assert');
 const crypto = require('crypto');
 const request = require('request');
 const { series, waterfall, doWhilst } = require('async');
+const redis = require('ioredis');
 
 const { scalityS3Client, awsS3Client } = require('../../../s3SDK');
 const ReplicationUtility = require('../../ReplicationUtility');
@@ -18,6 +19,23 @@ const hex = crypto.createHash('md5')
 const keyPrefix = `${srcBucket}/${hex}`;
 const key = `${keyPrefix}/object-to-replicate-${Date.now()}`;
 const REPLICATION_TIMEOUT = 300000;
+
+// TODO: remove
+const redis = new Redis();
+function attemptScan(pattern, count = 10, cb) {
+    const params = { match: pattern, count };
+    const keys = [];
+
+    const stream = redis.scanStream(params);
+    stream.on('data', resultKeys => {
+        for (let i = 0; i < resultKeys.length; i++) {
+            keys.push(resultKeys[i]);
+        }
+    });
+    stream.on('end', () => {
+        cb(null, keys);
+    });
+}
 
 function getAndCheckResponse(path, expectedBody, cb) {
     let shouldContinue = false;
@@ -139,6 +157,27 @@ describe('Backbeat object monitor CRR metrics', function() {
             next),
     ], done));
 
+    it('testing metrics', done => {
+        const pathPrefix = '/_/backbeat/api/metrics/crr';
+        makeGETRequest(`${pathPrefix}/all`, (err, res) => {
+            assert.ifError(err);
+            getResponseBody(res, (err, body) => {
+                assert.ifError(err);
+                process.stdout.write(`\nMETRICS: ${JSON.stringify(body)}\n`);
+                done();
+            });
+        });
+    });
+
+    it('testing redis', done => {
+        attemptScan('*', 10, (err, res) => {
+            assert.ifError(err);
+            process.stdout.write(`\nNUMBER OF REDIS KEYS: ${res.length}`);
+            process.stdout.write(`\nKEYS: ${res}\n`);
+            done()
+        });
+    });
+
     it('should monitor the average throughput for a 10 byte object', done => {
          // Use a new key since we don't want to track the previous operations.
         const throughputKey = `${key}-throughput`;
@@ -148,7 +187,7 @@ describe('Backbeat object monitor CRR metrics', function() {
                     Buffer.alloc(10), next),
             (data, next) =>
                 scalityUtils.waitUntilReplicated(srcBucket, throughputKey,
-                    undefined, next),
+                    undefined, err => next(err, data)),
             (data, next) => {
                 const path = `/_/backbeat/api/metrics/crr/${destLocation}` +
                     `/throughput/${srcBucket}/${throughputKey}` +
