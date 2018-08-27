@@ -178,7 +178,7 @@ describe('Backbeat object monitor CRR metrics', function() {
     //     });
     // });
 
-    it.only('should monitor the average throughput for a 10 byte object', done => {
+    it('should monitor the average throughput for a 10 byte object', done => {
          // Use a new key since we don't want to track the previous operations.
         const throughputKey = `${key}-throughput`;
         return waterfall([
