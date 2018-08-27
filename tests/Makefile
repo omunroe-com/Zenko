@@ -113,7 +113,7 @@ build-latest: | build-latest-backbeat build-latest-cloudserver
 
 install-tiller:
 ifndef NO_INSTALL
-	$(V)$(HELM) --tiller-namespace $(HELM_NAMESPACE) init --wait
+	$(V)$(HELM) init --wait
 endif
 .PHONY: install-tiller
 
