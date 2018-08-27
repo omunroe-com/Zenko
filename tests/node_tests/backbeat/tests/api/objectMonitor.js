@@ -37,6 +37,8 @@ const REPLICATION_TIMEOUT = 300000;
 //     });
 // }
 
+process.stdout.write(`\n============\n${process.env}\n`);
+
 function getAndCheckResponse(path, expectedBody, cb) {
     let shouldContinue = false;
     return doWhilst(next =>
