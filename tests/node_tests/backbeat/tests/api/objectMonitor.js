@@ -142,19 +142,6 @@ describe('Backbeat object monitor CRR metrics', function() {
         },
     ], done));
 
-
-    // it('testing metrics', done => {
-    //     const pathPrefix = '/_/backbeat/api/metrics/crr';
-    //     makeGETRequest(`${pathPrefix}/all`, (err, res) => {
-    //         assert.ifError(err);
-    //         getResponseBody(res, (err, body) => {
-    //             assert.ifError(err);
-    //             process.stdout.write(`\nMETRICS: ${JSON.stringify(body)}\n`);
-    //             done();
-    //         });
-    //     });
-    // });
-
     it('should monitor the average throughput for a 10 byte object', done => {
          // Use a new key since we don't want to track the previous operations.
         const throughputKey = `${key}-throughput`;
