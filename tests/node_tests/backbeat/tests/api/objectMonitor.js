@@ -135,11 +135,8 @@ describe('Backbeat object monitor CRR metrics', function() {
             });
         },
         // wait for metadata to update
-        next => {
-            console.log(`TYPEOF: ${typeof next}`)
-            scalityUtils.waitUntilReplicated(srcBucket, key, undefined,
-            next)
-        },
+        next => scalityUtils.waitUntilReplicated(srcBucket, key, undefined,
+            next),
     ], done));
 
     it('should monitor the average throughput for a 10 byte object', done => {
