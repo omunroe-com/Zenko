@@ -87,7 +87,7 @@ describe('Backbeat object monitor CRR metrics', function() {
             const responses = [];
             let progress = '0%';
             return doWhilst(callback =>
-                return makeGETRequest(path, (err, res) => {
+                makeGETRequest(path, (err, res) => {
                     if (err) {
                         return callback(err);
                     }
@@ -98,9 +98,6 @@ describe('Backbeat object monitor CRR metrics', function() {
                         }
                         progress = body.progress;
                         responses.push(body);
-                        if (progress !== '100%') {
-                            return setTimeout(callback, 50);
-                        }
                         return callback();
                     });
                 }),
