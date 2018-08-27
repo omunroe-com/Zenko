@@ -153,8 +153,11 @@ describe('Backbeat object monitor CRR metrics', function() {
             });
         },
         // wait for metadata to update
-        next => scalityUtils.waitUntilReplicated(srcBucket, key, undefined,
-            next),
+        next => {
+            console.log(`TYPEOF: ${typeof next}`)
+            scalityUtils.waitUntilReplicated(srcBucket, key, undefined,
+            next)
+        },
     ], done));
 
     // it('testing metrics', done => {
