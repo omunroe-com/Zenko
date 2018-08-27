@@ -111,7 +111,7 @@ describe('Backbeat object monitor CRR metrics', function() {
                         return callback(err);
                     }
                     assert.strictEqual(res.statusCode, 200);
-                    getResponseBody(res, (err, body) => {
+                    return getResponseBody(res, (err, body) => {
                         if (err) {
                             return callback(err);
                         }
