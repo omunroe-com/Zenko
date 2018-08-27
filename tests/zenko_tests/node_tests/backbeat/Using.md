@@ -28,8 +28,8 @@
    `.secrets.env`):
 
     ```
-    export ZENKO_STORAGE_ACCOUNT_ACCESS_KEY=<zenko-access-key>
-    export ZENKO_STORAGE_ACCOUNT_SECRET_KEY=<zenko-secret-key>
+    export ZENKO_ACCESS_KEY=<zenko-access-key>
+    export ZENKO_SECRET_KEY=<zenko-secret-key>
     ```
 
 5. Install node and npm.
@@ -55,15 +55,15 @@
    (for example, in `.env` and `.secrets.env`):
 
     ```
-    export AWS_S3_BACKEND_ACCESS_KEY=<aws-access-key>
-    export AWS_S3_BACKEND_SECRET_KEY=<aws-secret-key>
-    export AWS_S3_BACKBEAT_BUCKET_NAME=<destination-aws-bucket-name>
-    export AWS_S3_BACKEND_DESTINATION_LOCATION=<destination-aws-location-name>
-    export AWS_S3_BACKEND_SOURCE_LOCATION=<source-aws-location-name>
-    export AZURE_BACKEND_ACCOUNT_NAME=<azure-account-name>
-    export AZURE_BACKEND_ACCESS_KEY=<azure-access-key>
+    export AWS_ACCESS_KEY=<aws-access-key>
+    export AWS_SECRET_KEY=<aws-secret-key>
+    export AWS_CRR_BUCKET_NAME=<destination-aws-bucket-name>
+    export AWS_BACKEND_DESTINATION_LOCATION=<destination-aws-location-name>
+    export AWS_BACKEND_SOURCE_LOCATION=<source-aws-location-name>
+    export AZURE_ACCOUNT_NAME=<azure-account-name>
+    export AZURE_SECRET_KEY=<azure-access-key>
     export AZURE_BACKEND_ENDPOINT=<azure-endpoint>
-    export AZURE_BACKBEAT_CONTAINER_NAME=<destination-azure-container-name>
+    export AZURE_CRR_BUCKET_NAME=<destination-azure-container-name>
     export AZURE_BACKEND_DESTINATION_LOCATION=<destination-azure-location-name>
     export GCP_CRR_BUCKET_NAME=<destination-gcp-bucket-name>
     export GCP_BACKEND_DESTINATION_LOCATION=<destination-gcp-location-name>
@@ -105,14 +105,14 @@
 
     ```
     export CLOUDSERVER_HOST=<zenko-cloudserver-name>
-    export AWS_S3_BACKEND_ACCESS_KEY=<aws-access-key>
-    export AWS_S3_BACKEND_SECRET_KEY=<aws-secret-key>
-    export AWS_S3_BACKBEAT_BUCKET_NAME=<destination-aws-bucket-name>
-    export AWS_S3_BACKEND_DESTINATION_LOCATION=<destination-aws-location-name>
-    export AZURE_BACKEND_ACCOUNT_NAME=<azure-account-name>
-    export AZURE_BACKEND_ACCESS_KEY=<azure-access-key>
+    export AWS_ACCESS_KEY=<aws-access-key>
+    export AWS_SECRET_KEY=<aws-secret-key>
+    export AWS_CRR_BUCKET_NAME=<destination-aws-bucket-name>
+    export AWS_BACKEND_DESTINATION_LOCATION=<destination-aws-location-name>
+    export AZURE_ACCOUNT_NAME=<azure-account-name>
+    export AZURE_SECRET_KEY=<azure-access-key>
     export AZURE_BACKEND_ENDPOINT=<azure-endpoint>
-    export AZURE_BACKBEAT_CONTAINER_NAME=<destination-azure-container-name>
+    export AZURE_CRR_BUCKET_NAME=<destination-azure-container-name>
     export AZURE_BACKEND_DESTINATION_LOCATION=<destination-azure-location-name>
     ```
 
@@ -135,8 +135,8 @@
    and `.secrets.env`):
 
 ```
-export AWS_S3_BACKEND_ACCESS_KEY=<aws-access-key>
-export AWS_S3_BACKEND_SECRET_KEY=<aws-secret-key>
+export AWS_ACCESS_KEY=<aws-access-key>
+export AWS_SECRET_KEY=<aws-secret-key>
 export AWS_S3_FAIL_BACKBEAT_BUCKET_NAME=<destination-fail-aws-bucket-name>
 export AWS_S3_FAIL_BACKEND_DESTINATION_LOCATION=<destination-fail-aws-bucket-name>
 ```

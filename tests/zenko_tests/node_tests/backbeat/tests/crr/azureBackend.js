@@ -8,7 +8,7 @@ const sharedBlobSvc = require('../../azureSDK');
 const ReplicationUtility = require('../../ReplicationUtility');
 
 const utils = new ReplicationUtility(scalityS3Client, sharedBlobSvc);
-const destContainer = process.env.AZURE_BACKBEAT_CONTAINER_NAME;
+const destContainer = process.env.AZURE_CRR_BUCKET_NAME;
 const destLocation = process.env.AZURE_BACKEND_DESTINATION_LOCATION;
 const srcBucket = `source-bucket-${Date.now()}`;
 const hex = crypto.createHash('md5')

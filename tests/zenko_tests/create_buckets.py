@@ -30,7 +30,7 @@ def wait_for_pods(delete, timeout):
     v1 = client.CoreV1Api()
     delete_opt = client.V1DeleteOptions()
     delete_opt.grace_period_seconds = 0
-    
+
     timeout = time.time() + timeout
     while time.time() < timeout:
         ret = v1.list_namespaced_pod(K8S_NAMESPACE)
@@ -54,7 +54,7 @@ def wait_for_pods(delete, timeout):
       sys.exit(1)
     else:
       _log.info('Zenko services have stabilized successfully')
- 
+
 TIMEOUT = int(get_env('INSTALL_TIMEOUT'))
 
 K8S_NAMESPACE = os.getenv('ZENKO_K8S_NAMESPACE')
@@ -67,9 +67,9 @@ ZENKO_ACCESS_KEY = get_env('ZENKO_ACCESS_KEY')
 ZENKO_SECRET_KEY = get_env('ZENKO_SECRET_KEY')
 
 buckets = [
-    get_env('AWS_S3_BACKBEAT_SRC_BUCKET_NAME', 'zenko-aws-crr-src-bucket'),
+    get_env('AWS_CRR_SRC_BUCKET_NAME', 'zenko-aws-crr-src-bucket'),
     get_env('GCP_CRR_SRC_BUCKET_NAME', 'zenko-gcp-crr-src-bucket'),
-    get_env('AZURE_BACKBEAT_SRC_CONTAINER_NAME', 'zenko-azure-crr-src-bucket'),
+    get_env('AZURE_CRR_SRC_BUCKET_NAME', 'zenko-azure-crr-src-bucket'),
     get_env('WASABI_CRR_SRC_BUCKET', 'zenko-wasabi-crr-src-bucket'),
     get_env('DO_CRR_SRC_BUCKET', 'zenko-do-crr-src-bucket'),
     get_env('MULTI_CRR_SRC_BUCKET', 'zenko-multi-crr-src-bucket'),
@@ -81,7 +81,7 @@ s = Session(aws_access_key_id=ZENKO_ACCESS_KEY,
 s3client = s.resource('s3',
                       endpoint_url=ZENKO_ENDPOINT,
                       verify=VERIFY_CERTIFICATES)
-  
+
 # Create buckets
 _log.info('Creating testing buckets...')
 timeout = time.time() + TIMEOUT

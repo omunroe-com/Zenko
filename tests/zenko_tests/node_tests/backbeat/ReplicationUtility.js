@@ -5,8 +5,8 @@ const fs = require('fs');
 
 const { scalityS3Client, awsS3Client } = require('../s3SDK');
 
-const srcLocation = process.env.AWS_S3_BACKEND_SOURCE_LOCATION;
-const destAWSLocation = process.env.AWS_S3_BACKEND_DESTINATION_LOCATION;
+const srcLocation = process.env.AWS_BACKEND_SOURCE_LOCATION;
+const destAWSLocation = process.env.AWS_BACKEND_DESTINATION_LOCATION;
 const destAzureLocation = process.env.AZURE_BACKEND_DESTINATION_LOCATION;
 const destGCPLocation = process.env.GCP_BACKEND_DESTINATION_LOCATION;
 const REPLICATION_TIMEOUT = 10000;

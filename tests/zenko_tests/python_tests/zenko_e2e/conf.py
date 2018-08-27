@@ -96,10 +96,10 @@ DO_ENDPOINT = get_env('DO_ENDPOINT', 'https://nyc3.digitaloceanspaces.com')
 
 # This is the bucket the various cloud backends target
 # In other words, where my stuff gonna end up
-AWS_TARGET_BUCKET = get_env('AWS_S3_BUCKET_NAME', 'zenko-aws-target-bucket')
+AWS_TARGET_BUCKET = get_env('AWS_BUCKET_NAME', 'zenko-aws-target-bucket')
 GCP_TARGET_BUCKET = get_env('GCP_BUCKET_NAME', 'zenko-gcp-target-bucket')
 AZURE_TARGET_BUCKET = get_env(
-    'AZURE_BACKEND_CONTAINER_NAME', 'zenko-azure-target-bucket')
+    'AZURE_BUCKET_NAME', 'zenko-azure-target-bucket')
 WASABI_TARGET_BUCKET = get_env(
     'WASABI_TARGET_BUCKET', 'zenko-wasabi-target-bucket')
 DO_TARGET_BUCKET = get_env(
@@ -107,22 +107,22 @@ DO_TARGET_BUCKET = get_env(
 
 # The target buckets configured for CR replication
 AWS_CRR_TARGET_BUCKET = get_env(
-    'AWS_S3_BACKBEAT_BUCKET_NAME', 'zenko-aws-crr-target-bucket')
+    'AWS_CRR_BUCKET_NAME', 'zenko-aws-crr-target-bucket')
 GCP_CRR_TARGET_BUCKET = get_env(
     'GCP_CRR_BUCKET_NAME', 'zenko-gcp-crr-target-bucket')
 AZURE_CRR_TARGET_BUCKET = get_env(
-    'AZURE_BACKBEAT_CONTAINER_NAME', 'zenko-azure-crr-target-bucket')
+    'AZURE_CRR_BUCKET_NAME', 'zenko-azure-crr-target-bucket')
 WASABI_CRR_TARGET_BUCKET = get_env(
     'WASABI_TARGET_BUCKET', 'zenko-wasabi-crr-target-bucket')
 DO_CRR_TARGET_BUCKET = get_env(
     'DO_TARGET_BUCKET', 'zenko-digitalocean-crr-target-bucket')
 
 AWS_CRR_SRC_BUCKET = get_env(
-    'AWS_S3_BACKBEAT_SRC_BUCKET_NAME', 'zenko-aws-crr-src-bucket')
+    'AWS_CRR_SRC_BUCKET_NAME', 'zenko-aws-crr-src-bucket')
 GCP_CRR_SRC_BUCKET = get_env(
     'GCP_CRR_SRC_BUCKET_NAME', 'zenko-gcp-crr-src-bucket')
 AZURE_CRR_SRC_BUCKET = get_env(
-    'AZURE_BACKBEAT_SRC_CONTAINER_NAME', 'zenko-azure-crr-src-bucket')
+    'AZURE_CRR_SRC_BUCKET_NAME', 'zenko-azure-crr-src-bucket')
 WASABI_CRR_SRC_BUCKET = get_env(
     'WASABI_CRR_SRC_BUCKET', 'zenko-wasabi-crr-src-bucket')
 DO_CRR_SRC_BUCKET = get_env('DO_CRR_SRC_BUCKET', 'zenko-do-crr-src-bucket')
@@ -150,17 +150,17 @@ MULTI_CRR_TARGETS = [
     'AWS', 'GCP', 'AZURE', 'WASABI'
 ]
 
-AWS_ACCESS_KEY = get_env('AWS_S3_BACKEND_ACCESS_KEY', error=True)
-AWS_SECRET_KEY = get_env('AWS_S3_BACKEND_SECRET_KEY', error=True)
+AWS_ACCESS_KEY = get_env('AWS_ACCESS_KEY', error=True)
+AWS_SECRET_KEY = get_env('AWS_SECRET_KEY', error=True)
 
 AWS_BACKBEAT_ACCESS_KEY = get_env('AWS_S3_BACKBEAT_ACCESS_KEY', error=True)
 AWS_BACKBEAT_SECRET_KEY = get_env('AWS_S3_BACKBEAT_SECRET_KEY', error=True)
 
-GCP_ACCESS_KEY = get_env('AWS_GCP_BACKEND_ACCESS_KEY', error=True)
-GCP_SECRET_KEY = get_env('AWS_GCP_BACKEND_SECRET_KEY', error=True)
+GCP_ACCESS_KEY = get_env('GCP_ACCESS_KEY', error=True)
+GCP_SECRET_KEY = get_env('GCP_SECRET_KEY', error=True)
 
-AZURE_ACCESS_KEY = get_env('AZURE_BACKEND_ACCOUNT_NAME', error=True)
-AZURE_SECRET_KEY = get_env('AZURE_BACKEND_ACCESS_KEY', error=True)
+AZURE_ACCESS_KEY = get_env('AZURE_ACCOUNT_NAME', error=True)
+AZURE_SECRET_KEY = get_env('AZURE_SECRET_KEY', error=True)
 
 ZENKO_ACCESS_KEY = get_env('ZENKO_ACCESS_KEY')
 ZENKO_SECRET_KEY = get_env('ZENKO_SECRET_KEY')
