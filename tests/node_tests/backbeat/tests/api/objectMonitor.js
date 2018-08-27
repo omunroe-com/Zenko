@@ -2,7 +2,7 @@ const assert = require('assert');
 const crypto = require('crypto');
 const request = require('request');
 const { series, waterfall, doWhilst } = require('async');
-const redis = require('ioredis');
+const Redis = require('ioredis');
 
 const { scalityS3Client, awsS3Client } = require('../../../s3SDK');
 const ReplicationUtility = require('../../ReplicationUtility');
