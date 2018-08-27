@@ -12,33 +12,38 @@ Quickstart
 To be able to install charts and launch tests into the kubernetes cluster,
 helm and kubectl must be configured to manage the target cluster.
 
-1. Change the variable ``IMAGE_REPO`` in ``.local.env`` to a docker hub user you control.
+Change the variable ``IMAGE_REPO`` in ``.local.env`` to a docker hub user you control.
 
-2. Copy and fill in ``.secrets.env``
-    ``cp .secrets.env.example .secrets.env && vim .secrets.env``
+Copy and fill in ``.secrets.env``
 
-3. Source your environment files
-    ``source .env && source .secrets.env && source .local.env``
+``cp .secrets.env.example .secrets.env && vim .secrets.env``
 
-4. Run the tests
-    ``make -e test``
+Source your environment files
+
+``source .env && source .secrets.env && source .local.env``
+
+Run the tests
+
+``make -e test``
 
 **Pre-installed Zenko**
 
-1. Install and deploy Zenko as normal.
-2. Configure it using Orbit
-    You may need to make changes to ``.env`` to reflect the buckets and backends you have configured manually
+Install and deploy Zenko as normal.
 
-3. Change the variable ``IMAGE_REPO`` in ``.local.env`` to a docker hub user you control.
+Configure it using Orbit
 
-4. Copy and fill in ``.secrets.env``
-    ``cp .secrets.env.example .secrets.env && vim .secrets.env``
+You may need to make changes to ``.env`` to reflect the buckets and backends you have configured manually
 
-5. Source your environment files
-    ``source .env && source .secrets.env && source .local.env``
+Change the variable ``IMAGE_REPO`` in ``.local.env`` to a docker hub user you control.
 
-6. Run the tests
-    ``make -e test-local``
+Copy and fill in ``.secrets.env``
+``cp .secrets.env.example .secrets.env && vim .secrets.env``
+
+Source your environment files
+``source .env && source .secrets.env && source .local.env``
+
+Run the tests
+``make -e test-local``
 
 Environment variables
 ---------------------
