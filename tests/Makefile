@@ -113,7 +113,7 @@ build-latest: | build-latest-backbeat build-latest-cloudserver
 
 install-tiller:
 ifndef NO_INSTALL
-	$(V)$(HELM) init --wait
+	$(V)$(HELM) init --wait --tiller-namespace $(HELM_NAMESPACE)
 endif
 .PHONY: install-tiller
 
@@ -128,6 +128,7 @@ install-orbit-simulator: | builddir
 ifndef NO_SIM
 	$(V)$(GIT) clone git@github.com:scality/orbit-simulator.git build/orbit-simulator && \
 	$(HELM) upgrade ciutil \
+		--namespace $(HELM_NAMESPACE) \
         --install build/orbit-simulator/charts/orbit-simulator \
         --set simulator.shim.cloudserver_release=$(ZENKO_HELM_RELEASE) \
         --wait $(shell ../eve/workers/ci_env.sh set)
