@@ -21,21 +21,21 @@ const key = `${keyPrefix}/object-to-replicate-${Date.now()}`;
 const REPLICATION_TIMEOUT = 300000;
 
 // TODO: remove
-const redis = new Redis();
-function attemptScan(pattern, count = 10, cb) {
-    const params = { match: pattern, count };
-    const keys = [];
-
-    const stream = redis.scanStream(params);
-    stream.on('data', resultKeys => {
-        for (let i = 0; i < resultKeys.length; i++) {
-            keys.push(resultKeys[i]);
-        }
-    });
-    stream.on('end', () => {
-        cb(null, keys);
-    });
-}
+// const redis = new Redis();
+// function attemptScan(pattern, count = 10, cb) {
+//     const params = { match: pattern, count };
+//     const keys = [];
+//
+//     const stream = redis.scanStream(params);
+//     stream.on('data', resultKeys => {
+//         for (let i = 0; i < resultKeys.length; i++) {
+//             keys.push(resultKeys[i]);
+//         }
+//     });
+//     stream.on('end', () => {
+//         cb(null, keys);
+//     });
+// }
 
 function getAndCheckResponse(path, expectedBody, cb) {
     let shouldContinue = false;
@@ -169,16 +169,16 @@ describe('Backbeat object monitor CRR metrics', function() {
         });
     });
 
-    it('testing redis', done => {
-        attemptScan('*', 10, (err, res) => {
-            assert.ifError(err);
-            process.stdout.write(`\nNUMBER OF REDIS KEYS: ${res.length}`);
-            process.stdout.write(`\nKEYS: ${res}\n`);
-            done()
-        });
-    });
+    // it('testing redis', done => {
+    //     attemptScan('*', 10, (err, res) => {
+    //         assert.ifError(err);
+    //         process.stdout.write(`\nNUMBER OF REDIS KEYS: ${res.length}`);
+    //         process.stdout.write(`\nKEYS: ${res}\n`);
+    //         done()
+    //     });
+    // });
 
-    it('should monitor the average throughput for a 10 byte object', done => {
+    it.only('should monitor the average throughput for a 10 byte object', done => {
          // Use a new key since we don't want to track the previous operations.
         const throughputKey = `${key}-throughput`;
         return waterfall([
