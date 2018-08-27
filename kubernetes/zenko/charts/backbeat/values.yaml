@@ -9,8 +9,8 @@ global:
   replicationEndpoints: []
 
 image:
-  repository: tmacro/backbeat
-  tag: wip4
+  repository: philipyoo/backbeat
+  tag: 8.1
   pullPolicy: IfNotPresent
 
 logging:
