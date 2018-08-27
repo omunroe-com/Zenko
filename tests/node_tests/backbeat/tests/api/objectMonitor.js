@@ -37,8 +37,6 @@ const REPLICATION_TIMEOUT = 300000;
 //     });
 // }
 
-process.stdout.write(`\n============\n${process.env}\n`);
-
 function getAndCheckResponse(path, expectedBody, cb) {
     let shouldContinue = false;
     return doWhilst(next =>
@@ -79,85 +77,85 @@ describe('Backbeat object monitor CRR metrics', function() {
             `${srcBucket}/${keyPrefix}`, next),
     ], done));
 
-    // it('should monitor a 1 byte object', done => waterfall([
-    //     next => scalityUtils.putObject(srcBucket, key, Buffer.alloc(1), next),
-    //     (data, next) =>
-    //         scalityUtils.waitUntilReplicated(srcBucket, key, undefined, err =>
-    //             next(err, data)),
-    //     (data, next) => {
-    //         const path = `/_/backbeat/api/metrics/crr/${destLocation}` +
-    //             `/progress/${srcBucket}/${key}?versionId=${data.VersionId}`;
-    //         const expectedBody = {
-    //             description: 'Number of bytes to be replicated (pending), ' +
-    //                 'number of bytes transferred to the destination ' +
-    //                 '(completed), and percentage of the object that has ' +
-    //                 'completed replication (progress)',
-    //             pending: 0,
-    //             completed: 1,
-    //             progress: '100%',
-    //         };
-    //         return getAndCheckResponse(path, expectedBody, next);
-    //     },
-    // ], done));
+    it('should monitor a 1 byte object', done => waterfall([
+        next => scalityUtils.putObject(srcBucket, key, Buffer.alloc(1), next),
+        (data, next) =>
+            scalityUtils.waitUntilReplicated(srcBucket, key, undefined, err =>
+                next(err, data)),
+        (data, next) => {
+            const path = `/_/backbeat/api/metrics/crr/${destLocation}` +
+                `/progress/${srcBucket}/${key}?versionId=${data.VersionId}`;
+            const expectedBody = {
+                description: 'Number of bytes to be replicated (pending), ' +
+                    'number of bytes transferred to the destination ' +
+                    '(completed), and percentage of the object that has ' +
+                    'completed replication (progress)',
+                pending: 0,
+                completed: 1,
+                progress: '100%',
+            };
+            return getAndCheckResponse(path, expectedBody, next);
+        },
+    ], done));
 
-    // it('should monitor part uploads of an MPU object', done => waterfall([
-    //     next => scalityUtils.completeMPUAWS(srcBucket, key, 50, next),
-    //     (data, next) => {
-    //         const path = `/_/backbeat/api/metrics/crr/${destLocation}` +
-    //             `/progress/${srcBucket}/${key}?versionId=${data.VersionId}`;
-    //         const responses = [];
-    //         let progress = '0%';
-    //         return doWhilst(callback =>
-    //             makeGETRequest(path, (err, res) => {
-    //                 if (err) {
-    //                     return callback(err);
-    //                 }
-    //                 assert.strictEqual(res.statusCode, 200);
-    //                 getResponseBody(res, (err, body) => {
-    //                     if (err) {
-    //                         return callback(err);
-    //                     }
-    //                     progress = body.progress;
-    //                     responses.push(body);
-    //                     if (progress !== '100%') {
-    //                         return setTimeout(callback, 50);
-    //                     }
-    //                     return callback();
-    //                 });
-    //             }),
-    //         () => (progress !== '100%'), err => {
-    //             if (err) {
-    //                 return next(err);
-    //             }
-    //             // Fifty part object of 5MB + 1B parts.
-    //             const contentLength = (((1024 * 1024) * 5) + 1) * 50;
-    //             const firstResponse = responses[0];
-    //             assert.strictEqual(firstResponse.pending, 0);
-    //             assert.strictEqual(firstResponse.completed, 0);
-    //             assert.strictEqual(firstResponse.progress, '0%');
-    //             // Check that monitoring has tracked parts of the MPU.
-    //             const hasInterval = responses.some(response => {
-    //                 const { pending, completed } = response;
-    //                 const percentage =
-    //                     Number.parseInt(response.progress.split('%')[0], 10);
-    //                 const hasInterval =
-    //                     (pending > 0 && pending < contentLength) &&
-    //                     (completed > 0 && completed < contentLength) &&
-    //                     (percentage > 0 && percentage < 100);
-    //                 return hasInterval;
-    //             });
-    //             assert.strictEqual(hasInterval, true);
-    //             const finalResponse = responses[responses.length - 1];
-    //             assert.strictEqual(finalResponse.pending, 0);
-    //             assert.strictEqual(finalResponse.completed, contentLength);
-    //             assert.strictEqual(finalResponse.progress, '100%');
-    //             return next();
-    //         });
-    //     },
-    //     // wait for metadata to update
-    //     next => scalityUtils.waitUntilReplicated(srcBucket, key, undefined,
-    //         next),
-    // ], done));
+    it('should monitor part uploads of an MPU object', done => waterfall([
+        next => scalityUtils.completeMPUAWS(srcBucket, key, 50, next),
+        (data, next) => {
+            const path = `/_/backbeat/api/metrics/crr/${destLocation}` +
+                `/progress/${srcBucket}/${key}?versionId=${data.VersionId}`;
+            const responses = [];
+            let progress = '0%';
+            return doWhilst(callback =>
+                makeGETRequest(path, (err, res) => {
+                    if (err) {
+                        return callback(err);
+                    }
+                    assert.strictEqual(res.statusCode, 200);
+                    getResponseBody(res, (err, body) => {
+                        if (err) {
+                            return callback(err);
+                        }
+                        progress = body.progress;
+                        responses.push(body);
+                        if (progress !== '100%') {
+                            return setTimeout(callback, 50);
+                        }
+                        return callback();
+                    });
+                }),
+            () => (progress !== '100%'), err => {
+                if (err) {
+                    return next(err);
+                }
+                // Fifty part object of 5MB + 1B parts.
+                const contentLength = (((1024 * 1024) * 5) + 1) * 50;
+                const firstResponse = responses[0];
+                assert.strictEqual(firstResponse.pending, 0);
+                assert.strictEqual(firstResponse.completed, 0);
+                assert.strictEqual(firstResponse.progress, '0%');
+                // Check that monitoring has tracked parts of the MPU.
+                const hasInterval = responses.some(response => {
+                    const { pending, completed } = response;
+                    const percentage =
+                        Number.parseInt(response.progress.split('%')[0], 10);
+                    const hasInterval =
+                        (pending > 0 && pending < contentLength) &&
+                        (completed > 0 && completed < contentLength) &&
+                        (percentage > 0 && percentage < 100);
+                    return hasInterval;
+                });
+                assert.strictEqual(hasInterval, true);
+                const finalResponse = responses[responses.length - 1];
+                assert.strictEqual(finalResponse.pending, 0);
+                assert.strictEqual(finalResponse.completed, contentLength);
+                assert.strictEqual(finalResponse.progress, '100%');
+                return next();
+            });
+        },
+        // wait for metadata to update
+        next => scalityUtils.waitUntilReplicated(srcBucket, key, undefined,
+            next),
+    ], done));
 
     // it('testing metrics', done => {
     //     const pathPrefix = '/_/backbeat/api/metrics/crr';
