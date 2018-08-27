@@ -5,9 +5,9 @@ if [ "$1" == "env" ]; then
   CI_PREFIX=""
   printf -- "\
 --env ZENKO_HELM_RELEASE=$ZENKO_HELM_RELEASE \
--env HELM_NAMESPACE=$HELM_NAMESPACE \
+--env HELM_NAMESPACE=$HELM_NAMESPACE \
 --env NUM_CPUS=1 \
---env INSTALL_TIMEOUT=$INSTALL_TIMEOUT"
+--env INSTALL_TIMEOUT=$INSTALL_TIMEOUT "
 
 elif [ "$1" == "set" ]; then
   CLI_FLAG="set"
