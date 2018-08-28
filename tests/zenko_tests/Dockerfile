@@ -1,6 +1,10 @@
-FROM node:6-alpine
+FROM alpine:3.7
 
 ENV MOCHA_TAGS not:flaky
+ENV LANG C.UTF-8
+
+ADD https://nodejs.org/dist/v6.14.4/node-v6.14.4-linux-x64.tar.gz /tmp/
+RUN tar xzf /tmp/node-v6.14.4-linux-x64.tar.gz -C /usr/local/ && rm /tmp/node-v6.14.4-linux-x64.tar.gz
 
 # Install dependencies
 RUN apk add -U python3 \

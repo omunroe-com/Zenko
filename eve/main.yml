@@ -121,11 +121,6 @@ stages:
       - Git: *git_pull
       - ShellCommand: *private_registry_login
       - ShellCommand:
-          name: test
-          command: env
-          env:
-            <<: *global_env
-      - ShellCommand:
           name: Setup Zenko and run end to end tests
           command: make -e test
           workdir: build/tests
