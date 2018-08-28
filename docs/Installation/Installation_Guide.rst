@@ -104,21 +104,21 @@ Use a Fresh Cluster
 
 If you are installing Zenko on a fresh cluster, the following instructions
 are sufficient. If, however, you are reinstalling Zenko on an existing cluster
-(while assessing or testing Zenko, for example), it is a best practice to use
-a fresh cluster.
+(while assessing or testing Zenko, for example), it is a best practice to wipe
+existing clusters and start from a fresh cluster.
 
 Get Ready
 *********
 
-1. If you are in the MetalK8s virtual shell, stay in it. Change to the
+1. If you are using MetalK8s, use the MetalK8s virtual shell. Change to the
    directory from which you will deploy Zenko:
 
    ::
 
     $ cd
 
-   If you are not installing from MetalK8s, follow the instructions
-   in Zenko/docs/gke.md to install Helm on your cluster.
+   If you are not installing from MetalK8s, follow the instructions in
+   Zenko/docs/gke.md to install Helm on your cluster.
 
 2. Initialize Helm:
 
@@ -158,14 +158,15 @@ Get Ready
 Install Zenko
 *************
 
-Helm installs Zenko using packages of kubernetes resource definitions known as charts.
-Helm follows charts for each of the Zenko components and they can be found under
-kubernetes/zenko/charts. For each component there is a Chart.yaml file and a values.yaml
-file. Helm reads the Chart.yaml file to establish basic installation attributes
-such as name and version number, and reads the values file for instructions on
-how to deploy and configure the component. Though manually editing the default
-settings in values.yaml is possible, it is much better to write configuration
-changes and options to :file:`Zenko/kubernetes/charts/options.yml`, which Helm can use to
+Helm installs Zenko using packages of Kubernetes resource definitions known as
+charts. These charts, which Helm follows for each Zenko component, can be found
+under kubernetes/zenko/charts. For each component there is a Chart.yaml file
+and a values.yaml file. Helm reads the Chart.yaml file to establish such basic
+installation attributes as name and version number, and reads the values file
+for instructions on how to deploy and configure the component. Though manually
+editing the default settings in values.yaml is possible, it is much better to
+write configuration changes and options to
+:file:`Zenko/kubernetes/charts/options.yml`, which Helm can use to
 overwrite the default settings presented in the charts.
 
 Follow these steps to install Zenko with Ingress.
@@ -174,8 +175,8 @@ Follow these steps to install Zenko with Ingress.
 controller. If you are using a different ingress controller, substitute
 parameters as appropriate.)
 
-1. Create an options.yml file in Zenko/kubernetes/ to store deployment parameters.
-   Enter the following parameters:
+1. Create an options.yml file in Zenko/kubernetes/ to store deployment
+   parameters. Enter the following parameters:
 
    ::
 
