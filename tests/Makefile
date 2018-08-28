@@ -220,7 +220,7 @@ test-node: | build-node-e2e
 		$(shell ../eve/workers/ci_env.sh env) \
 		--env CLOUDSERVER_ENDPOINT="http://$(ZENKO_HELM_RELEASE)-cloudserver:80" \
 		--env MOCHA_TAGS="$(NODE_TEST_TAGS)" \
-		-- ./npm_chain.sh test_api
+		-- ./npm_chain.sh test_crr test_api test_crr_pause_resume test_location_quota
 .PHONY: test-node
 
 test-node-flaky:
