@@ -25,7 +25,7 @@ RUN python3 -m pip install -r /tmp/requirements.txt tox kubernetes && \
     cd /usr/local/bin/tests/node_tests && \
     npm install && \
     rm -rf /var/cache/apk/* && \
-    npm cache clear && \
+    npm cache clear --force && \
     rm -rf ~/.node-gyp && \
     rm -rf /tmp/npm-* && \
     rm -rf /var/cache/apk/*
