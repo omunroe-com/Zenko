@@ -33,10 +33,7 @@ function getAndCheckResponse(path, expectedBody, cb) {
                 }
                 shouldContinue =
                     JSON.stringify(body) !== JSON.stringify(expectedBody);
-                if (shouldContinue) {
-                    return setTimeout(next, 2000);
-                }
-                return next();
+                return setTimeout(next, 2000);
             });
         }),
     () => shouldContinue, cb);
@@ -98,7 +95,7 @@ describe('Backbeat object monitor CRR metrics', function() {
                         }
                         progress = body.progress;
                         responses.push(body);
-                        return callback();
+                        return setTimeout(callback, 50);
                     });
                 }),
             () => (progress !== '100%'), err => {
