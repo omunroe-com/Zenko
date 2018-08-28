@@ -153,8 +153,8 @@ MULTI_CRR_TARGETS = [
 AWS_ACCESS_KEY = get_env('AWS_ACCESS_KEY', error=True)
 AWS_SECRET_KEY = get_env('AWS_SECRET_KEY', error=True)
 
-AWS_BACKBEAT_ACCESS_KEY = get_env('AWS_S3_BACKBEAT_ACCESS_KEY', error=True)
-AWS_BACKBEAT_SECRET_KEY = get_env('AWS_S3_BACKBEAT_SECRET_KEY', error=True)
+AWS_BACKBEAT_ACCESS_KEY = get_env('AWS_CRR_ACCESS_KEY', error=True)
+AWS_BACKBEAT_SECRET_KEY = get_env('AWS_CRR_SECRET_KEY', error=True)
 
 GCP_ACCESS_KEY = get_env('GCP_ACCESS_KEY', error=True)
 GCP_SECRET_KEY = get_env('GCP_SECRET_KEY', error=True)
