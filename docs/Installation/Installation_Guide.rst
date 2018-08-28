@@ -100,7 +100,7 @@ Installing Zenko
 ################
 
 Use a Fresh Cluster
-===================
+*******************
 
 If you are installing Zenko on a fresh cluster, the following instructions
 are sufficient. If, however, you are reinstalling Zenko on an existing cluster
